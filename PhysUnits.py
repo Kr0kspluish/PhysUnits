@@ -1,3 +1,10 @@
+class InhomogenousError(Exception):
+    
+    '''An exception when trying forbidden operations between inhomogeneous
+    PhysUnit expressions'''
+    
+    pass
+
 class PhysUnit:
     
     def __init__(self, val, unit):
@@ -19,8 +26,7 @@ class PhysUnit:
                     self.unit[s[0]] = int(s[1])
         
         else:
-            print("Tu fais n'imp mon pote")
-        #TODO vraie erreur si ce n'est aucun des deux
+            raise TypeError("The unit should be a string or a dictionnary")
 
     def __str__(self, latex=False):
         
@@ -55,14 +61,13 @@ class PhysUnit:
         if isinstance(other, self.__class__):
 
             if self.unit != other.unit:
-                print("Inhomogène") #TODO vraie erreur
+                raise InhomogenousError("Operands for + must have the same unit.")
                 return -1
             else:
                 return self.__class__(self.val+other.val, dict(self.unit))
 
         else:
             print("Erreur de type") #TODO vraie erreur
-            return -1
 
     def __radd__(self, other):
         
@@ -73,8 +78,7 @@ class PhysUnit:
         if isinstance(other, self.__class__):
 
             if self.unit != other.unit:
-                print("Inhomogène") #TODO vraie erreur
-                return -1
+                raise InhomogenousError("Operands for - must have the same unit.")
             else:
                 return self.__class__(self.val-other.val, dict(self.unit))
         else:
@@ -86,8 +90,7 @@ class PhysUnit:
         if isinstance(other, self.__class__):
 
             if self.unit != other.unit:
-                print("Inhomogène") #TODO vraie erreur
-                return -1
+                raise InhomogenousError("Operands for - must have the same unit.")
             else:
                 return self.__class__(other.val-self.val, dict(self.unit))
         else:
@@ -156,28 +159,46 @@ class PhysUnit:
 # Comparison operators
     
     def __lt__(self, other):
-        print("Not implemented yet")
-        pass #TODO
+
+        if self.unit != other.unit:
+            raise InhomogenousError("Operands must have the same unit for comparison.")
+        else:
+            return self.val < other.val
 
     def __gt__(self, other):
-        print("Not implemented yet")
-        pass #TODO
+
+        if self.unit != other.unit:
+            raise InhomogenousError("Operands must have the same unit for comparison.")
+        else:
+            return self.val > other.val
 
     def __le__(self, other):
-        print("Not implemented yet")
-        pass #TODO
+
+        if self.unit != other.unit:
+            raise InhomogenousError("Operands must have the same unit for comparison.")
+        else:
+            return self.val <= other.val
 
     def __ge__(self, other):
-        print("Not implemented yet")
-        pass #TODO
+
+        if self.unit != other.unit:
+            raise InhomogenousError("Operands must have the same unit for comparison.")
+        else:
+            return self.val >= other.val
 
     def __eq__(self, other):
-        print("Not implemented yet")
-        pass #TODO
+
+        if self.unit != other.unit:
+            raise InhomogenousError("Operands must have the same unit for comparison.")
+        else:
+            return self.val == other.val
 
     def __ne__(self, other):
-        print("Not implemented yet")
-        pass #TODO
+
+        if self.unit != other.unit:
+            raise InhomogenousError("Operands must have the same unit for comparison.")
+        else:
+            return self.val != other.val
 
 # Assignment operators
 
@@ -201,16 +222,18 @@ class PhysUnit:
         print("Not implemented yet")
         pass #TODO
     
-# Unary Operators
+# Unary operators
 
-    def __neg__(self, other):
-        print("Not implemented yet")
-        pass #TODO
+    def __neg__(self):
+        
+        return self.__class__(-self.val, self.unit)
 
-    def __pos__(self, other):
-        print("Not implemented yet")
-        pass #TODO
+    def __pos__(self):
 
-    def __invert__(self, other):
-        print("Not implemented yet")
-        pass #TODO
+        return self.__class__(+self.val, self.unit)
+
+    def __abs__(self):
+
+        return self.__class__(abs(self.val), self.unit)
+
+
