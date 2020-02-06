@@ -69,72 +69,148 @@ class PhysUnit:
         return self + other
 
     def __sub__(self, other):
-        pass #TODO
+        
+        if isinstance(other, self.__class__):
+
+            if self.unit != other.unit:
+                print("Inhomogène") #TODO vraie erreur
+                return -1
+            else:
+                return self.__class__(self.val-other.val, dict(self.unit))
+        else:
+            print("Erreur de type") #TODO vraie erreur
+            return -1
 
     def __rsub__(self, other):
-        pass #TODO
+        
+        if isinstance(other, self.__class__):
+
+            if self.unit != other.unit:
+                print("Inhomogène") #TODO vraie erreur
+                return -1
+            else:
+                return self.__class__(other.val-self.val, dict(self.unit))
+        else:
+            print("Erreur de type") #TODO vraie erreur
+            return -1
 
     def __mul__(self, other):
-        pass #TODO (on peut multiplier par un autre PhysUnit ou une constante)
+        
+        if isinstance(other, self.__class__):
+            new_unit = dict(self.unit)
+            for k in other.unit.keys():
+                if k in new_unit.keys():
+                    if new_unit[k] == -other.unit[k]:
+                        del(new_unit[k])
+                    else:
+                        new_unit[k] += other.unit[k]
+                else:
+                    new_unit[k]=other.unit[k]
+            return self.__class__(self.val*other.val, new_unit)
+
+        else:
+            return self.__class__(self.val*other, dict(self.unit))
 
     def __rmul__(self, other):
-        pass #TODO
+        
+        return other*self
 
     def __truediv__(self, other):
-        pass #TODO
+        
+        if isinstance(other, self.__class__):
+            new_unit = dict(self.unit)
+            for k in other.unit.keys():
+                if k in new_unit.keys():
+                    if new_unit[k] == other.unit[k]:
+                        del(new_unit[k])
+                    else:
+                        new_unit[k] -= other.unit[k]
+                else:
+                    new_unit[k]=-other.unit[k]
+            return self.__class__(self.val/other.val, new_unit)
 
-    def __rtruediv__(self, other):#TODO check que ça existe
-        pass #TODO
+        else:
+            return self.__class__(self.val/other, dict(self.unit))
+
+    def __rtruediv__(self, other):
+
+        if isinstance(other, self.__class__):
+            new_unit = dict(other.unit)
+            for k in other.unit.keys():
+                if k in new_unit.keys():
+                    if new_unit[k] == self.unit[k]:
+                        del(new_unit[k])
+                    else:
+                        new_unit[k] -= self.unit[k]
+                else:
+                    new_unit[k]=-self.unit[k]
+            return self.__class__(other.val/self.val, new_unit)
+
+        else:
+            return self.__class__(other/self.val, dict([(k, -self.unit[k]) for k in self.unit.keys()]))
 
     def __pow__(self, other):
-        pass #TODO (l'exposant doit être une constante)
-
-#TODO opérations arithmétiques (floordiv, mod) ?
+        
+        return self.__class__(self.val**other, dict([(k,self.unit[k]*other) for k in self.unit.keys()]))
 
 # Comparison operators
     
     def __lt__(self, other):
+        print("Not implemented yet")
         pass #TODO
 
     def __gt__(self, other):
+        print("Not implemented yet")
         pass #TODO
 
     def __le__(self, other):
+        print("Not implemented yet")
         pass #TODO
 
     def __ge__(self, other):
+        print("Not implemented yet")
         pass #TODO
 
     def __eq__(self, other):
+        print("Not implemented yet")
         pass #TODO
 
     def __ne__(self, other):
+        print("Not implemented yet")
         pass #TODO
 
 # Assignment operators
 
     def __iadd__(self, other):
+        print("Not implemented yet")
         pass #TODO
 
     def __isub__(self, other):
+        print("Not implemented yet")
         pass #TODO
 
     def __imul__(self, other):
+        print("Not implemented yet")
         pass #TODO
 
     def __idiv__(self, other):
+        print("Not implemented yet")
         pass #TODO
     
     def __ipow__(self, other):
+        print("Not implemented yet")
         pass #TODO
     
 # Unary Operators
 
     def __neg__(self, other):
+        print("Not implemented yet")
         pass #TODO
 
     def __pos__(self, other):
+        print("Not implemented yet")
         pass #TODO
 
     def __invert__(self, other):
+        print("Not implemented yet")
         pass #TODO
