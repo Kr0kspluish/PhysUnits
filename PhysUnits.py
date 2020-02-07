@@ -6,7 +6,7 @@ class InhomogenousError(Exception):
     pass
 
 class PhysUnit:
-    
+
     def __init__(self, val, unit):
 
         self.val = val
@@ -51,6 +51,19 @@ class PhysUnit:
             l.append(s)
 
         return self.__class__.__name__ + '(' + self.val.__repr__() + ',\'' + '.'.join(l) + '\')'
+
+    def print_Latex(self):
+
+        l = []
+        for k in self.unit.keys():
+            s = k
+            if self.unit[k] != 1:
+                s_count = str(self.unit[k])
+                s += ('^' if len(s_count) == 1 else '^{') + s_count + ('}' if len(s_count) != 1 else '')
+            l.append(s)
+
+        print(self.val.__repr__() + '\\cdot '.join(l))
+
 
 ### Operations on PhysUnit
 
