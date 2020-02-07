@@ -62,12 +62,11 @@ class PhysUnit:
 
             if self.unit != other.unit:
                 raise InhomogenousError("Operands for + must have the same unit.")
-                return -1
             else:
                 return self.__class__(self.val+other.val, dict(self.unit))
 
         else:
-            print("Erreur de type") #TODO vraie erreur
+            raise TypeError("Operation + forbidden between {} and {}.".format(self.__class__.__name__, other.__class__.__name__))
 
     def __radd__(self, other):
         
@@ -82,8 +81,7 @@ class PhysUnit:
             else:
                 return self.__class__(self.val-other.val, dict(self.unit))
         else:
-            print("Erreur de type") #TODO vraie erreur
-            return -1
+            raise TypeError("Operation - forbidden between {} and {}.".format(self.__class__.__name__, other.__class__.__name__))
 
     def __rsub__(self, other):
         
@@ -94,8 +92,7 @@ class PhysUnit:
             else:
                 return self.__class__(other.val-self.val, dict(self.unit))
         else:
-            print("Erreur de type") #TODO vraie erreur
-            return -1
+            raise TypeError("Operation - forbidden between {} and {}.".format(other.__class__.__name__, self.__class__.__name__))
 
     def __mul__(self, other):
         
@@ -202,26 +199,83 @@ class PhysUnit:
 
 # Assignment operators
 
-    def __iadd__(self, other):
-        print("Not implemented yet")
-        pass #TODO
+    def __iadd__(self, other):        
+        
+        if isinstance(other, self.__class__):
+
+            if self.unit != other.unit:
+                raise InhomogenousError("Operands for + must have the same unit.")
+            else:
+                self.val += other.val
+
+        else:
+            raise TypeError("Operation + forbidden between {} and {}.".format(self.__class__.__name__, other.__class__.__name__))
+
+        return self
 
     def __isub__(self, other):
-        print("Not implemented yet")
-        pass #TODO
+
+        if isinstance(other, self.__class__):
+
+            if self.unit != other.unit:
+                raise InhomogenousError("Operands for - must have the same unit.")
+            else:
+                self.val-=other.val
+        else:
+            raise TypeError("Operation - forbidden between {} and {}.".format(self.__class__.__name__, other.__class__.__name__))
+
+        return self
 
     def __imul__(self, other):
-        print("Not implemented yet")
-        pass #TODO
 
+        if isinstance(other, self.__class__):
+            
+            for k in other.unit.keys():
+                if k in self.unit.keys():
+                    if self.unit[k] == -other.unit[k]:
+                        del(self.unit[k])
+                    else:
+                        self.unit[k] += other.unit[k]
+                else:
+                    self.unit[k]=other.unit[k]
+            
+            self.val*=other.val
+
+        else:
+            self.val*=other
+
+        return self
+    
     def __idiv__(self, other):
-        print("Not implemented yet")
-        pass #TODO
+        
+        if isinstance(other, self.__class__):
+            for k in other.unit.keys():
+                if k in self.unit.keys():
+                    if self.unit[k] == other.unit[k]:
+                        del(self.unit[k])
+                    else:
+                        self.unit[k] -= other.unit[k]
+                else:
+                    self.unit[k]=-other.unit[k]
+            self.val/=other.val
+
+        else:
+            self.val/=other
+
+        return self
     
     def __ipow__(self, other):
-        print("Not implemented yet")
-        pass #TODO
-    
+        
+        self.val**=other
+        if other == 0:
+            self.unit = dict()
+        else:
+            for k in self.unit.keys():
+                self.unit[k] *= other
+        
+        return self
+
+
 # Unary operators
 
     def __neg__(self):
