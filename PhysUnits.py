@@ -15,15 +15,16 @@ class PhysUnit:
 
         elif isinstance(unit, str):
             self.unit = dict()
-            for u in unit.split('.'):
-                s = u.split('^')
-                if len(s) == 1:
-                    try:
-                        self.unit[s[0]] += 1
-                    except KeyError:
-                        self.unit[s[0]] = 1
-                else: 
-                    self.unit[s[0]] = int(s[1])
+            if unit != '':
+                for u in unit.split('.'):
+                    s = u.split('^')
+                    if len(s) == 1:
+                        try:
+                            self.unit[s[0]] += 1
+                        except KeyError:
+                            self.unit[s[0]] = 1
+                    else: 
+                        self.unit[s[0]] = int(s[1])
         
         else:
             raise TypeError("The unit should be a string or a dictionnary")
@@ -80,10 +81,18 @@ class PhysUnit:
                 raise InhomogenousError("Operands for + must have the same unit.")
             else:
                 return self.__class__(self.val+other.val, dict(self.unit))
-
+        
         else:
-            raise TypeError("Operation + forbidden between {} and {}.".format(self.__class__.__name__, other.__class__.__name__))
-
+            try:
+                new = self.__class__(self.val+other, dict())
+            except TypeError:
+                raise TypeError("Operation + forbidden between {} and {}.".format(self.__class__.__name__, other.__class__.__name__))
+            
+            if self.unit == dict(): # Allow adding a PhysUnit with no unit and a constant
+                return new
+            else:
+                raise InhomogenousError("Trying to add a PhysUnit with a unit to a constant.")
+        
     def __radd__(self, other):
         '''Returns other + self.
         See __add__ for compatibility with other classes.'''
@@ -100,8 +109,17 @@ class PhysUnit:
                 raise InhomogenousError("Operands for - must have the same unit.")
             else:
                 return self.__class__(self.val-other.val, dict(self.unit))
+        
         else:
-            raise TypeError("Operation - forbidden between {} and {}.".format(self.__class__.__name__, other.__class__.__name__))
+            try:
+                new = self.__class__(self.val-other, dict())
+            except TypeError:
+                raise TypeError("Operation - forbidden between {} and {}.".format(self.__class__.__name__, other.__class__.__name__))
+            
+            if self.unit == dict(): # Allow adding a PhysUnit with no unit and a constant
+                return new
+            else:
+                raise InhomogenousError("Trying to add a PhysUnit with a unit to a constant.")
 
     def __rsub__(self, other):
         '''Returns other - self.
@@ -113,8 +131,17 @@ class PhysUnit:
                 raise InhomogenousError("Operands for - must have the same unit.")
             else:
                 return self.__class__(other.val-self.val, dict(self.unit))
+        
         else:
-            raise TypeError("Operation - forbidden between {} and {}.".format(other.__class__.__name__, self.__class__.__name__))
+            try:
+                new = self.__class__(other-self.val, dict())
+            except TypeError:
+                raise TypeError("Operation - forbidden between {} and {}.".format(other.__class__.__name__, self.__class__.__name__))
+            
+            if self.unit == dict(): # Allow adding a PhysUnit with no unit and a constant
+                return new
+            else:
+                raise InhomogenousError("Trying to add a PhysUnit with a unit to a constant.")
 
     def __mul__(self, other):
         '''Returns self * other.
