@@ -38,7 +38,7 @@ class PhysUnit:
                 s += '^' + str(self.unit[k])
             l.append(s)
 
-        return str(self.val) + '.'.join(l)
+        return str(self.val) + ' ' + '.'.join(l)
 
 
     def __repr__(self):
