@@ -1,3 +1,5 @@
+from fractions import Fraction
+
 class InhomogenousError(Exception):
     
     '''An exception when trying forbidden operations between inhomogeneous
@@ -11,7 +13,7 @@ class PhysUnit:
 
         self.val = val
         if isinstance(unit, dict):
-            self.unit = dict(unit)
+            self.unit = dict([(k,Fraction(unit[k])) for k in unit.keys()])
 
         elif isinstance(unit, str):
             self.unit = dict()
@@ -24,7 +26,7 @@ class PhysUnit:
                         except KeyError:
                             self.unit[s[0]] = 1
                     else: 
-                        self.unit[s[0]] = int(s[1])
+                        self.unit[s[0]] = Fraction(s[1])
         
         else:
             raise TypeError("The unit should be a string or a dictionnary")
@@ -60,8 +62,16 @@ class PhysUnit:
         for k in self.unit.keys():
             s = k
             if self.unit[k] != 1:
-                s_count = str(self.unit[k])
-                s += ('^' if len(s_count) == 1 else '^{') + s_count + ('}' if len(s_count) != 1 else '')
+                s_exp = str(self.unit[k])
+                if '/' in s_exp:
+                    num, den = s_exp.split('/')
+                    if num[0] == '-':
+                        sgn = '-'
+                        num = num[1:]
+                    else:
+                        sgn = ''
+                    s_exp = sgn + '\\frac{' + str(num) + '}{' + str(den) + '}'
+                s += ('^' if len(s_exp) == 1 else '^{') + s_exp + ('}' if len(s_exp) != 1 else '')
             l.append(s)
 
         print(self.val.__repr__() + '\\cdot '.join(l))
