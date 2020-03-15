@@ -55,8 +55,8 @@ class PhysUnit:
 
         return self.__class__.__name__ + '(' + self.val.__repr__() + ',\'' + '.'.join(l) + '\')'
 
-    def print_Latex(self):
-        '''Prints a string that can directly be copy-pasted within LaTeX code'''
+    def __str_Latex__(self):
+        '''Return a string that can directly be copy-pasted within LaTeX code'''
 
         l = []
         for k in self.unit.keys():
@@ -74,7 +74,12 @@ class PhysUnit:
                 s += ('^' if len(s_exp) == 1 else '^{') + s_exp + ('}' if len(s_exp) != 1 else '')
             l.append(s)
 
-        print(self.val.__repr__() + '\\cdot '.join(l))
+        return(self.val.__repr__() + '\\cdot '.join(l))
+
+    def print_Latex(self):
+        '''Print a string that can directly be copy-pasted within LaTeX code'''
+        
+        print(self.__str_Latex__)
 
 
 ### Operations on PhysUnit
